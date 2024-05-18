@@ -1,26 +1,58 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'closeOtherTabs') {
-    chrome.tabs.query({}, (tabs) => {
-      tabs.forEach((tab) => {
-        if (tab.id !== request.tabId) {
-          chrome.tabs.remove(tab.id);
+// Create context menu items
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "closeOtherTabs",
+    title: "Close Other Tabs",
+    contexts: ["action"]
+  });
+
+  chrome.contextMenus.create({
+    id: "closeOtherWindows",
+    title: "Close Other Windows",
+    contexts: ["action"]
+  });
+
+  chrome.contextMenus.create({
+    id: "closeEverything",
+    title: "Close Everything",
+    contexts: ["action"]
+  });
+});
+
+// Handle context menu item clicks
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "closeOtherTabs") {
+    chrome.tabs.query({}, (ts) => {
+      ts.forEach((t) => {
+        if (t.id !== tab.id) {
+          chrome.tabs.remove(t.id);
         }
       });
     });
-  } else if (request.action === 'closeOtherWindows') {
-    chrome.windows.getAll((windows) => {
-      windows.forEach((window) => {
-        if (window.id !== request.windowId) {
-          chrome.windows.remove(window.id);
+  } else if (info.menuItemId === "closeOtherWindows") {
+    chrome.windows.getAll((ws) => {
+      ws.forEach((w) => {
+        if (w.id !== tab.windowId) {
+          chrome.windows.remove(w.id);
         }
       });
     });
-  } else if (request.action === 'closeEverything') {
-    chrome.windows.getAll((windows) => {
-      windows.forEach((window) => {
-        chrome.windows.remove(window.id);
+  } else if (info.menuItemId === "closeEverything") {
+    chrome.windows.getAll((ws) => {
+      ws.forEach((w) => {
+        chrome.windows.remove(w.id);
       });
     });
   }
-  sendResponse({ status: 'done' });
+});
+
+// Default action on left-click
+chrome.action.onClicked.addListener((tab) => {
+  chrome.tabs.query({}, (ts) => {
+    ts.forEach((t) => {
+      if (t.id !== tab.id) {
+        chrome.tabs.remove(t.id);
+      }
+    });
+  });
 });
