@@ -3,7 +3,7 @@
   "name": "Tabcloser",
   "version": "0.2",
   "description": "Easily manage having too many tabs.",
-  "permissions": ["tabs", "contextMenus"],
+  "permissions": ["contextMenus"],
   "background": {
     "service_worker": "background.js"
   },
