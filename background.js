@@ -1,8 +1,15 @@
 // Create context menu items
 chrome.runtime.onInstalled.addListener(() => {
+
   chrome.contextMenus.create({
     id: "closeOtherTabs",
     title: "Close Other Tabs",
+    contexts: ["action"]
+  });
+
+  chrome.contextMenus.create({
+    id: "closeOtherTabsSameWindow",
+    title: "Close Other Tabs (Same Window)",
     contexts: ["action"]
   });
 
@@ -41,6 +48,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     chrome.windows.getAll((ws) => {
       ws.forEach((w) => {
         chrome.windows.remove(w.id);
+      });
+    });
+  } else if (info.menuItemId === "closeOtherTabsSameWindow") {
+    chrome.tabs.query({ windowId: tab.windowId }, (ts) => {
+      ts.forEach((t) => {
+        if (t.id !== tab.id) {
+          chrome.tabs.remove(t.id);
+        }
       });
     });
   }
