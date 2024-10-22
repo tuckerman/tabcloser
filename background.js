@@ -65,7 +65,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.action.onClicked.addListener((tab) => {
   chrome.tabs.query({}, (ts) => {
     ts.forEach((t) => {
-      if (t.id !== tab.id) {
+      if (t.id !== tab.id && t.url && !t.url.includes("meet.google.com")) {
         chrome.tabs.remove(t.id);
       }
     });
